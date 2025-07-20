@@ -1,0 +1,388 @@
+# Simple working deployments for all platforms
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-platform-simple
+  namespace: tiation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-platform-simple
+  template:
+    metadata:
+      labels:
+        app: ai-platform-simple
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: ai-content
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: ai-content
+        configMap:
+          name: ai-platform-content
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-platform-content
+  namespace: tiation
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SXC Digital - AI Platform</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 50px 20px; }
+            h1 { font-size: 3em; margin-bottom: 20px; }
+            p { font-size: 1.2em; margin: 20px 0; }
+            .features { display: flex; justify-content: center; flex-wrap: wrap; margin: 40px 0; }
+            .feature { background: rgba(255,255,255,0.1); padding: 20px; margin: 10px; border-radius: 10px; min-width: 250px; }
+            .cta { background: #ff6b6b; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block; }
+            .status { background: rgba(0,255,0,0.2); padding: 10px 20px; border-radius: 5px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <h1>🤖 SXC Digital AI Platform</h1>
+        <div class="status">🚀 Platform Status: LIVE & OPERATIONAL</div>
+        <p>Enterprise AI automation platform powering digital transformation</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>⚡ AI Automation</h3>
+                <p>90% task reduction through intelligent automation</p>
+            </div>
+            <div class="feature">
+                <h3>🔒 Enterprise Security</h3>
+                <p>SOC 2 compliant with zero-trust architecture</p>
+            </div>
+            <div class="feature">
+                <h3>📈 Scalable Infrastructure</h3>
+                <p>Handle millions of AI operations seamlessly</p>
+            </div>
+        </div>
+        
+        <a href="mailto:contact@sxc.digital" class="cta">Get Enterprise Demo</a>
+        <a href="https://tiation.online" class="cta">View All Platforms</a>
+        
+        <p style="margin-top: 50px; opacity: 0.8;">
+            Powered by Kubernetes • Enterprise Grade • 99.9% Uptime SLA
+        </p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-platform-simple-service
+  namespace: tiation
+spec:
+  selector:
+    app: ai-platform-simple
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-platform-simple-ingress
+  namespace: tiation
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: ai-ip
+    networking.gke.io/managed-certificates: ai-ssl-cert
+    kubernetes.io/ingress.class: gce
+spec:
+  rules:
+  - host: sxc.digital
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: ai-platform-simple-service
+            port:
+              number: 80
+---
+# Rigger Platform
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rigger-platform-simple
+  namespace: tiation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rigger-platform-simple
+  template:
+    metadata:
+      labels:
+        app: rigger-platform-simple
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: rigger-content
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: rigger-content
+        configMap:
+          name: rigger-platform-content
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rigger-platform-content
+  namespace: tiation
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Tiation Online - Rigger Platform</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #2C5282 0%, #2A69AC 100%); color: white; text-align: center; padding: 50px 20px; }
+            h1 { font-size: 3em; margin-bottom: 20px; }
+            p { font-size: 1.2em; margin: 20px 0; }
+            .features { display: flex; justify-content: center; flex-wrap: wrap; margin: 40px 0; }
+            .feature { background: rgba(255,255,255,0.1); padding: 20px; margin: 10px; border-radius: 10px; min-width: 250px; }
+            .cta { background: #f56500; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block; }
+            .status { background: rgba(0,255,0,0.2); padding: 10px 20px; border-radius: 5px; margin: 20px 0; }
+            .stats { background: rgba(255,255,255,0.1); padding: 20px; margin: 40px 0; border-radius: 10px; }
+        </style>
+    </head>
+    <body>
+        <h1>🏗️ Tiation Rigger Platform</h1>
+        <div class="status">🚀 Platform Status: LIVE & RECRUITING</div>
+        <p>Enterprise workforce management for construction & mining in Western Australia</p>
+        
+        <div class="stats">
+            <h2>📊 Platform Metrics</h2>
+            <p><strong>500+ Active Riggers</strong> • <strong>99.9% Safety Compliance</strong> • <strong>24/7 Monitoring</strong></p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>👷 Skilled Workforce</h3>
+                <p>Connect with certified riggers and construction professionals</p>
+            </div>
+            <div class="feature">
+                <h3>🛡️ Safety First</h3>
+                <p>Real-time safety monitoring and compliance tracking</p>
+            </div>
+            <div class="feature">
+                <h3>📱 Mobile Ready</h3>
+                <p>Full mobile app for iOS and Android platforms</p>
+            </div>
+        </div>
+        
+        <a href="mailto:contact@tiation.online" class="cta">Find Riggers</a>
+        <a href="https://businesswebsite.live" class="cta">Business Solutions</a>
+        
+        <p style="margin-top: 50px; opacity: 0.8;">
+            Serving Western Australia • Licensed & Insured • Enterprise Ready
+        </p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rigger-platform-simple-service
+  namespace: tiation
+spec:
+  selector:
+    app: rigger-platform-simple
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rigger-platform-simple-ingress
+  namespace: tiation
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: rigger-ip
+    networking.gke.io/managed-certificates: rigger-ssl-cert
+    kubernetes.io/ingress.class: gce
+spec:
+  rules:
+  - host: tiation.online
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rigger-platform-simple-service
+            port:
+              number: 80
+---
+# CMS Platform
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms-platform-simple
+  namespace: tiation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cms-platform-simple
+  template:
+    metadata:
+      labels:
+        app: cms-platform-simple
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: cms-content
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: cms-content
+        configMap:
+          name: cms-platform-content
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cms-platform-content
+  namespace: tiation
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Business Website Live - CMS Platform</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #134E5E 0%, #71B280 100%); color: white; text-align: center; padding: 50px 20px; }
+            h1 { font-size: 3em; margin-bottom: 20px; }
+            p { font-size: 1.2em; margin: 20px 0; }
+            .features { display: flex; justify-content: center; flex-wrap: wrap; margin: 40px 0; }
+            .feature { background: rgba(255,255,255,0.1); padding: 20px; margin: 10px; border-radius: 10px; min-width: 250px; }
+            .cta { background: #27AE60; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block; }
+            .status { background: rgba(255,165,0,0.3); padding: 10px 20px; border-radius: 5px; margin: 20px 0; }
+            .pricing { background: rgba(255,255,255,0.1); padding: 30px; margin: 40px 0; border-radius: 10px; }
+        </style>
+    </head>
+    <body>
+        <h1>📝 Business Website Live</h1>
+        <div class="status">🚧 Platform Status: LAUNCHING SOON</div>
+        <p>Enterprise-grade headless CMS for modern businesses</p>
+        
+        <div class="pricing">
+            <h2>💰 Simple Pricing</h2>
+            <p><strong>$29/month</strong> Starter • <strong>$99/month</strong> Professional • <strong>$299/month</strong> Enterprise</p>
+            <p>No setup fees • 30-day free trial • Cancel anytime</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🚀 Headless CMS</h3>
+                <p>API-first content management for modern applications</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Lightning Fast</h3>
+                <p>Global CDN with 99.9% uptime guarantee</p>
+            </div>
+            <div class="feature">
+                <h3>🔧 Developer Friendly</h3>
+                <p>RESTful APIs, webhooks, and comprehensive documentation</p>
+            </div>
+        </div>
+        
+        <a href="mailto:sales@businesswebsite.live" class="cta">Get Early Access</a>
+        <a href="https://sxc.digital" class="cta">View AI Platform</a>
+        
+        <p style="margin-top: 50px; opacity: 0.8;">
+            Part of Tiation Enterprise Suite • Launching Q3 2024 • Enterprise Ready
+        </p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms-platform-simple-service
+  namespace: tiation
+spec:
+  selector:
+    app: cms-platform-simple
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cms-platform-simple-ingress
+  namespace: tiation
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: cms-ip
+    networking.gke.io/managed-certificates: cms-ssl-cert
+    kubernetes.io/ingress.class: gce
+spec:
+  rules:
+  - host: businesswebsite.live
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: cms-platform-simple-service
+            port:
+              number: 80
+---
+# SSL Certificates
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: ai-ssl-cert
+  namespace: tiation
+spec:
+  domains:
+    - sxc.digital
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: rigger-ssl-cert
+  namespace: tiation
+spec:
+  domains:
+    - tiation.online
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: cms-ssl-cert
+  namespace: tiation
+spec:
+  domains:
+    - businesswebsite.live

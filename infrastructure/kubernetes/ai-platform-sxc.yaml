@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-platform
+  namespace: tiation
+  labels:
+    app: ai-platform
+    domain: sxc.digital
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-platform
+  template:
+    metadata:
+      labels:
+        app: ai-platform
+    spec:
+      containers:
+      - name: ai-platform
+        image: gcr.io/tiation-enterprise/ai-platform:latest
+        ports:
+        - containerPort: 5173
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "5173"
+        - name: DOMAIN
+          value: "sxc.digital"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5173
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5173
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-platform-service
+  namespace: tiation
+  labels:
+    app: ai-platform
+spec:
+  selector:
+    app: ai-platform
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5173
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-platform-ingress
+  namespace: tiation
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: ai-ip
+    networking.gke.io/managed-certificates: ai-platform-ssl-cert
+    kubernetes.io/ingress.class: gce
+spec:
+  rules:
+  - host: sxc.digital
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: ai-platform-service
+            port:
+              number: 80
+  - host: www.sxc.digital
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: ai-platform-service
+            port:
+              number: 80
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: ai-platform-ssl-cert
+  namespace: tiation
+spec:
+  domains:
+    - sxc.digital
+    - www.sxc.digital
