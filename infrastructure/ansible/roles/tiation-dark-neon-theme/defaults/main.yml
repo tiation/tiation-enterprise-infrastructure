@@ -1,0 +1,120 @@
+---
+# Default variables for Tiation Dark Neon Theme Role
+
+# Theme Configuration
+theme_name: "tiation-dark-neon"
+theme_version: "1.0.0"
+theme_enabled: true
+
+# Color Palette
+theme_colors:
+  primary: "#00ffff"        # Cyan
+  secondary: "#ff00ff"      # Magenta
+  accent: "#00ff00"         # Green
+  background: "#0a0a0a"     # Deep black
+  surface: "#1a1a1a"       # Dark gray
+  text_primary: "#ffffff"   # White
+  text_secondary: "#cccccc" # Light gray
+  border: "#333333"         # Medium gray
+  success: "#00ff00"        # Green
+  warning: "#ffff00"        # Yellow
+  error: "#ff0000"          # Red
+  info: "#00ffff"           # Cyan
+
+# Gradient Configurations
+theme_gradients:
+  primary_gradient: "linear-gradient(135deg, #00ffff, #ff00ff)"
+  secondary_gradient: "linear-gradient(45deg, #ff00ff, #00ffff)"
+  accent_gradient: "linear-gradient(90deg, #00ff00, #00ffff)"
+  background_gradient: "linear-gradient(180deg, #0a0a0a, #1a1a1a)"
+
+# Terminal Theme Settings
+terminal_theme:
+  enable: true
+  profile_name: "Tiation Dark Neon"
+  font_family: "Fira Code"
+  font_size: 14
+  opacity: 0.95
+  cursor_color: "#00ffff"
+  selection_color: "#ff00ff"
+  tab_color: "#1a1a1a"
+
+# VSCode Theme Settings
+vscode_theme:
+  enable: true
+  theme_file: "tiation-dark-neon.json"
+  extensions:
+    - "ms-vscode.theme-tomorrowkit"
+    - "zhuangtongfa.material-theme"
+    - "PKief.material-icon-theme"
+
+# Web/CSS Theme Settings
+web_theme:
+  enable: true
+  css_file: "tiation-theme.css"
+  custom_properties: true
+  responsive: true
+  animations: true
+
+# GitHub Pages Theme Settings
+github_pages_theme:
+  enable: true
+  theme_file: "_config.yml"
+  custom_css: true
+  syntax_highlighting: true
+
+# Application-specific Settings
+applications:
+  warp_terminal:
+    enable: true
+    config_path: "~/.warp/themes"
+    
+  iTerm2:
+    enable: true
+    config_path: "~/Library/Application Support/iTerm2/DynamicProfiles"
+    
+  hyper:
+    enable: true
+    config_path: "~/.hyper.js"
+    
+  sublime_text:
+    enable: true
+    config_path: "~/Library/Application Support/Sublime Text/Packages/User"
+    
+  atom:
+    enable: true
+    config_path: "~/.atom/packages"
+
+# Installation Paths
+theme_install_paths:
+  system_wide: "/usr/local/share/themes/tiation-dark-neon"
+  user_local: "~/.local/share/themes/tiation-dark-neon"
+  config_dir: "~/.config/tiation-theme"
+  cache_dir: "~/.cache/tiation-theme"
+
+# Backup Settings
+backup_existing_themes: true
+backup_directory: "~/.local/share/themes/backups"
+
+# Update Settings
+auto_update: false
+update_check_interval: "7d"
+update_source: "https://github.com/tiaastor/tiation-dark-neon-theme"
+
+# Performance Settings
+optimize_performance: true
+preload_assets: true
+compress_css: true
+minimize_dom: true
+
+# Accessibility Settings
+accessibility:
+  high_contrast: false
+  large_fonts: false
+  motion_reduced: false
+  screen_reader_optimized: false
+
+# Debug Settings
+debug_mode: false
+verbose_logging: false
+theme_validation: true

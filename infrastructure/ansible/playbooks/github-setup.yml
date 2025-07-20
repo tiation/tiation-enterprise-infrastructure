@@ -1,0 +1,188 @@
+---
+# GitHub Repository Management Playbook
+- name: "Setup and Configure GitHub Repositories"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    github_org: "tiaastor"
+    enterprise_repos:
+      - name: "tiation-ansible-enterprise"
+        description: "Enterprise-grade Ansible automation platform"
+        private: false
+        topics: ["ansible", "automation", "enterprise", "infrastructure", "devops"]
+        
+      - name: "tiation-docker-debian"
+        description: "Professional Docker on Debian deployment solution"
+        private: false
+        topics: ["docker", "debian", "container", "infrastructure"]
+        
+      - name: "tiation-terminal-workflows"
+        description: "Custom terminal automation workflows and productivity scripts"
+        private: false
+        topics: ["terminal", "automation", "productivity", "workflows"]
+        
+      - name: "tiation-ai-platform"
+        description: "Enterprise AI platform and automation suite"
+        private: false
+        topics: ["ai", "platform", "automation", "enterprise"]
+
+  pre_tasks:
+    - name: Verify GitHub token
+      fail:
+        msg: "GitHub token is required. Set GITHUB_TOKEN environment variable."
+      when: github_token == ""
+
+    - name: Install PyGithub
+      pip:
+        name: PyGithub
+        state: present
+
+  tasks:
+    - name: Create GitHub repositories
+      uri:
+        url: "https://api.github.com/orgs/{{ github_org }}/repos"
+        method: POST
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body_format: json
+        body:
+          name: "{{ item.name }}"
+          description: "{{ item.description }}"
+          private: "{{ item.private | default(false) }}"
+          auto_init: true
+          has_issues: true
+          has_projects: true
+          has_wiki: true
+        status_code: [201, 422]  # 422 for already exists
+      loop: "{{ enterprise_repos }}"
+      register: repo_results
+
+    - name: Set repository topics
+      uri:
+        url: "https://api.github.com/repos/{{ github_org }}/{{ item.name }}/topics"
+        method: PUT
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.mercy-preview+json"
+        body_format: json
+        body:
+          names: "{{ item.topics }}"
+      loop: "{{ enterprise_repos }}"
+      when: item.topics is defined
+
+    - name: Configure branch protection
+      uri:
+        url: "https://api.github.com/repos/{{ github_org }}/{{ item.name }}/branches/main/protection"
+        method: PUT
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body_format: json
+        body:
+          required_status_checks:
+            strict: true
+            contexts: ["continuous-integration"]
+          enforce_admins: true
+          required_pull_request_reviews:
+            required_approving_review_count: 1
+            dismiss_stale_reviews: true
+            require_code_owner_reviews: true
+          restrictions: null
+        status_code: [200, 201]
+      loop: "{{ enterprise_repos }}"
+      ignore_errors: yes
+
+    - name: Create GitHub Pages deployment
+      uri:
+        url: "https://api.github.com/repos/{{ github_org }}/{{ item.name }}/pages"
+        method: POST
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body_format: json
+        body:
+          source:
+            branch: "main"
+            path: "/docs"
+        status_code: [200, 201, 409]
+      loop: "{{ enterprise_repos }}"
+      ignore_errors: yes
+
+    - name: Setup repository secrets
+      uri:
+        url: "https://api.github.com/repos/{{ github_org }}/{{ item.0.name }}/actions/secrets/{{ item.1.name }}"
+        method: PUT
+        headers:
+          Authorization: "token {{ github_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body_format: json
+        body:
+          encrypted_value: "{{ item.1.value | ansible.builtin.b64encode }}"
+      loop: "{{ enterprise_repos | product(github_secrets) | list }}"
+      vars:
+        github_secrets:
+          - name: "DOCKER_USERNAME"
+            value: "{{ docker_username | default('') }}"
+          - name: "DOCKER_PASSWORD"
+            value: "{{ docker_password | default('') }}"
+          - name: "ANSIBLE_VAULT_PASSWORD"
+            value: "{{ ansible_vault_password | default('') }}"
+      when: 
+        - github_secrets is defined
+        - item.1.value != ""
+      no_log: true
+
+    - name: Create repository workflows
+      copy:
+        content: |
+          name: CI/CD Pipeline
+          
+          on:
+            push:
+              branches: [ main, develop ]
+            pull_request:
+              branches: [ main ]
+          
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v3
+                - name: Setup Python
+                  uses: actions/setup-python@v4
+                  with:
+                    python-version: '3.9'
+                - name: Install dependencies
+                  run: |
+                    python -m pip install --upgrade pip
+                    pip install -r requirements.txt
+                - name: Run tests
+                  run: |
+                    python -m pytest tests/
+                - name: Run linting
+                  run: |
+                    ansible-lint playbooks/
+            
+            deploy:
+              needs: test
+              runs-on: ubuntu-latest
+              if: github.ref == 'refs/heads/main'
+              steps:
+                - uses: actions/checkout@v3
+                - name: Deploy to GitHub Pages
+                  uses: peaceiris/actions-gh-pages@v3
+                  with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    publish_dir: ./docs
+        dest: "/tmp/{{ item.name }}-workflow.yml"
+      loop: "{{ enterprise_repos }}"
+
+    - name: Display repository URLs
+      debug:
+        msg: |
+          Repository created: https://github.com/{{ github_org }}/{{ item.name }}
+          GitHub Pages: https://{{ github_org }}.github.io/{{ item.name }}
+      loop: "{{ enterprise_repos }}"

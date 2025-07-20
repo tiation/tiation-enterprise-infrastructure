@@ -1,0 +1,79 @@
+---
+# Main Site Playbook - Complete Infrastructure Deployment
+- name: "Deploy Tiation Enterprise Infrastructure"
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: "{{ ansible_python.executable }}"
+    
+  pre_tasks:
+    - name: Update system packages
+      package:
+        name: "*"
+        state: latest
+      when: ansible_os_family in ["RedHat", "Debian"]
+
+    - name: Ensure Python is installed
+      raw: |
+        if ! command -v python3 &> /dev/null; then
+          if command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y python3 python3-pip
+          elif command -v yum &> /dev/null; then
+            yum install -y python3 python3-pip
+          fi
+        fi
+      changed_when: false
+
+  tasks:
+    - name: Include common configuration
+      include_tasks: common.yml
+
+    - name: Apply security hardening
+      include_tasks: security.yml
+
+    - name: Setup monitoring
+      include_tasks: monitoring.yml
+
+    - name: Configure services
+      include_tasks: services.yml
+
+  post_tasks:
+    - name: Verify deployment
+      include_tasks: verify.yml
+
+    - name: Send deployment notification
+      mail:
+        to: "{{ notification_email | default('admin@tiation.com') }}"
+        subject: "Ansible Deployment Complete - {{ inventory_hostname }}"
+        body: |
+          Deployment completed successfully on {{ inventory_hostname }}
+          
+          Timestamp: {{ ansible_date_time.iso8601 }}
+          Playbook: {{ ansible_playbook }}
+          User: {{ ansible_user_id }}
+          
+          System Information:
+          - OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          - Kernel: {{ ansible_kernel }}
+          - Architecture: {{ ansible_architecture }}
+          - Memory: {{ ansible_memtotal_mb }}MB
+          - CPU: {{ ansible_processor_cores }} cores
+      when: notification_email is defined
+      delegate_to: localhost
+
+  handlers:
+    - name: restart services
+      systemd:
+        name: "{{ item }}"
+        state: restarted
+        daemon_reload: yes
+      loop:
+        - docker
+        - nginx
+        - ssh
+      listen: "restart all services"
+
+    - name: reload systemd
+      systemd:
+        daemon_reload: yes

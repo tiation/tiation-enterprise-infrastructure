@@ -1,0 +1,34 @@
+---
+# Metadata for Tiation Dark Neon Theme Role
+
+dependencies: []
+
+license: MIT
+
+galaxy_info:
+  author: TiaAstor
+  description: "Role to apply Tiation's Dark Neon Theme across various environments"
+  company: Tiation
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+
+    - name: macOS
+      versions:
+        - mojave
+        - catalina
+
+  categories:
+    - theme
+    - ui
+    - development
+

@@ -1,0 +1,107 @@
+---
+# Main tasks for Tiation Dark Neon Theme Role
+
+- name: "Validate theme configuration"
+  assert:
+    that:
+      - theme_name is defined
+      - theme_version is defined
+      - theme_enabled | bool
+    fail_msg: "Theme configuration is invalid"
+    success_msg: "Theme configuration validated successfully"
+  when: theme_validation | default(true)
+
+- name: "Create theme directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ theme_install_paths.user_local }}"
+    - "{{ theme_install_paths.config_dir }}"
+    - "{{ theme_install_paths.cache_dir }}"
+    - "{{ backup_directory }}"
+  become: false
+
+- name: "Backup existing themes"
+  include_tasks: backup.yml
+  when: backup_existing_themes | default(true)
+
+- name: "Apply terminal theme"
+  include_tasks: terminal.yml
+  when: terminal_theme.enable | default(true)
+
+- name: "Apply VSCode theme"
+  include_tasks: vscode.yml
+  when: vscode_theme.enable | default(true)
+
+- name: "Apply web theme"
+  include_tasks: web.yml
+  when: web_theme.enable | default(true)
+
+- name: "Apply GitHub Pages theme"
+  include_tasks: github_pages.yml
+  when: github_pages_theme.enable | default(true)
+
+- name: "Configure application-specific themes"
+  include_tasks: applications.yml
+  when: applications is defined
+
+- name: "Generate theme documentation"
+  template:
+    src: "README.md.j2"
+    dest: "{{ theme_install_paths.user_local }}/README.md"
+    mode: '0644'
+  become: false
+
+- name: "Create theme validation script"
+  template:
+    src: "validate_theme.sh.j2"
+    dest: "{{ theme_install_paths.user_local }}/validate_theme.sh"
+    mode: '0755'
+  become: false
+
+- name: "Install theme update script"
+  template:
+    src: "update_theme.sh.j2"
+    dest: "{{ theme_install_paths.user_local }}/update_theme.sh"
+    mode: '0755'
+  become: false
+
+- name: "Configure theme auto-update"
+  cron:
+    name: "Tiation theme auto-update"
+    minute: "0"
+    hour: "2"
+    job: "{{ theme_install_paths.user_local }}/update_theme.sh"
+    state: "{{ 'present' if auto_update else 'absent' }}"
+  become: false
+  when: auto_update is defined
+
+- name: "Display theme installation summary"
+  debug:
+    msg: |
+      🎨 Tiation Dark Neon Theme Installation Complete!
+      
+      ✅ Theme Name: {{ theme_name }}
+      ✅ Version: {{ theme_version }}
+      ✅ Installation Path: {{ theme_install_paths.user_local }}
+      ✅ Configuration Path: {{ theme_install_paths.config_dir }}
+      
+      📱 Applications Configured:
+      {% for app, config in applications.items() %}
+      {% if config.enable %}
+      - {{ app }}: {{ config.config_path }}
+      {% endif %}
+      {% endfor %}
+      
+      🔧 Additional Features:
+      - Auto-update: {{ 'Enabled' if auto_update else 'Disabled' }}
+      - Backup: {{ 'Enabled' if backup_existing_themes else 'Disabled' }}
+      - Performance Optimization: {{ 'Enabled' if optimize_performance else 'Disabled' }}
+      - Accessibility: {{ 'Enabled' if accessibility.high_contrast else 'Standard' }}
+      
+      🚀 To apply the theme, restart your applications or run:
+      {{ theme_install_paths.user_local }}/validate_theme.sh
+      
+      📚 Documentation: {{ theme_install_paths.user_local }}/README.md
