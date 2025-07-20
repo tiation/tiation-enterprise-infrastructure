@@ -1,0 +1,510 @@
+---
+---
+
+@import "minima";
+
+// Dark neon theme variables
+$neon-cyan: #00ffff;
+$neon-pink: #ff00ff;
+$neon-green: #00ff00;
+$neon-purple: #8a2be2;
+$neon-blue: #0080ff;
+$neon-orange: #ff6600;
+$dark-bg: #0a0a0a;
+$darker-bg: #000000;
+$card-bg: #1a1a1a;
+$text-primary: #ffffff;
+$text-secondary: #cccccc;
+$text-muted: #888888;
+$border-color: #333333;
+$gradient-primary: linear-gradient(135deg, #8a2be2 0%, #00ffff 50%, #ff00ff 100%);
+$gradient-secondary: linear-gradient(135deg, #00ff00 0%, #0080ff 100%);
+$gradient-neon: linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #00ff00 100%);
+
+// Global dark theme
+body {
+  background: $dark-bg;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.05) 0%, transparent 50%);
+  color: $text-primary;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+// Neon glow effect mixin
+@mixin neon-glow($color, $size: 10px) {
+  box-shadow: 
+    0 0 5px $color,
+    0 0 10px $color,
+    0 0 15px $color,
+    0 0 20px $color;
+  text-shadow: 
+    0 0 5px $color,
+    0 0 10px $color,
+    0 0 15px $color;
+}
+
+@mixin neon-border($color) {
+  border: 2px solid $color;
+  @include neon-glow($color, 5px);
+}
+
+// Header styling
+.site-header {
+  background: $darker-bg;
+  border-bottom: 2px solid $neon-cyan;
+  @include neon-glow($neon-cyan, 3px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+  .site-title {
+    color: $neon-cyan !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+    @include neon-glow($neon-cyan, 2px);
+    
+    &:hover {
+      text-decoration: none;
+      color: $neon-pink !important;
+      @include neon-glow($neon-pink, 3px);
+      transition: all 0.3s ease;
+    }
+  }
+  
+  .site-nav .page-link {
+    color: $text-secondary;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      color: $neon-green;
+      @include neon-glow($neon-green, 2px);
+      border-color: $neon-green;
+      text-decoration: none;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Hero section
+.hero {
+  background: $darker-bg;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 10%, rgba(0, 255, 0, 0.1) 0%, transparent 30%);
+  color: $text-primary;
+  padding: 6rem 0;
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 255, 0.1) 50%, transparent 70%);
+    animation: scan 4s linear infinite;
+  }
+  
+  h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    background: $gradient-neon;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    @include neon-glow($neon-cyan, 3px);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    color: $text-secondary;
+    @include neon-glow($neon-green, 1px);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+    
+    .btn {
+      background: transparent;
+      color: $neon-cyan;
+      padding: 1rem 2rem;
+      border: 2px solid $neon-cyan;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      @include neon-glow($neon-cyan, 2px);
+      
+      &:nth-child(1):hover {
+        color: $neon-pink;
+        border-color: $neon-pink;
+        @include neon-glow($neon-pink, 3px);
+        transform: translateY(-3px) scale(1.05);
+      }
+      
+      &:nth-child(2):hover {
+        color: $neon-green;
+        border-color: $neon-green;
+        @include neon-glow($neon-green, 3px);
+        transform: translateY(-3px) scale(1.05);
+      }
+      
+      &:nth-child(3):hover {
+        color: $neon-purple;
+        border-color: $neon-purple;
+        @include neon-glow($neon-purple, 3px);
+        transform: translateY(-3px) scale(1.05);
+      }
+    }
+  }
+}
+
+@keyframes scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+// Code blocks
+.highlight {
+  background: $card-bg;
+  border: 1px solid $neon-cyan;
+  @include neon-glow($neon-cyan, 2px);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  border-radius: 10px;
+  
+  pre {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: $neon-green;
+    font-family: 'Fira Code', 'Courier New', monospace;
+  }
+}
+
+// Command blocks
+.command-block {
+  background: $card-bg;
+  color: $neon-green;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border: 1px solid $neon-cyan;
+  @include neon-glow($neon-cyan, 2px);
+  font-family: 'Fira Code', 'Courier New', monospace;
+  position: relative;
+  
+  &::before {
+    content: '> ';
+    color: $neon-pink;
+    font-weight: bold;
+  }
+  
+  .command-title {
+    color: $neon-cyan;
+    font-weight: bold;
+    margin-bottom: 0.8rem;
+    @include neon-glow($neon-cyan, 1px);
+  }
+  
+  code {
+    background: none;
+    color: $neon-green;
+    padding: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// Tips and warnings
+.tip, .warning, .info {
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border: 1px solid;
+  position: relative;
+  
+  &.tip {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: $neon-cyan;
+    @include neon-glow($neon-cyan, 2px);
+    
+    .tip-title {
+      color: $neon-cyan;
+      font-weight: bold;
+      @include neon-glow($neon-cyan, 1px);
+    }
+  }
+  
+  &.warning {
+    background: rgba(255, 102, 0, 0.1);
+    border-color: $neon-orange;
+    @include neon-glow($neon-orange, 2px);
+    
+    .warning-title {
+      color: $neon-orange;
+      font-weight: bold;
+      @include neon-glow($neon-orange, 1px);
+    }
+  }
+  
+  &.info {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: $neon-green;
+    @include neon-glow($neon-green, 2px);
+    
+    .info-title {
+      color: $neon-green;
+      font-weight: bold;
+      @include neon-glow($neon-green, 1px);
+    }
+  }
+}
+
+// Cards
+.card {
+  background: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: $gradient-neon;
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    border-color: $neon-cyan;
+    @include neon-glow($neon-cyan, 3px);
+  }
+  
+  &:nth-child(2):hover {
+    border-color: $neon-pink;
+    @include neon-glow($neon-pink, 3px);
+  }
+  
+  &:nth-child(3):hover {
+    border-color: $neon-green;
+    @include neon-glow($neon-green, 3px);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    .card-icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+      background: $gradient-neon;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: $text-primary;
+      @include neon-glow($neon-cyan, 1px);
+    }
+  }
+  
+  p, li {
+    color: $text-secondary;
+    line-height: 1.6;
+  }
+}
+
+// Grid layout
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Footer
+.site-footer {
+  background: $darker-bg;
+  color: $text-secondary;
+  border-top: 2px solid $neon-cyan;
+  @include neon-glow($neon-cyan, 2px);
+  padding: 2rem 0;
+  
+  .footer-heading {
+    color: $neon-cyan;
+    @include neon-glow($neon-cyan, 1px);
+  }
+  
+  a {
+    color: $neon-green;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      color: $neon-pink;
+      @include neon-glow($neon-pink, 1px);
+      text-decoration: none;
+    }
+  }
+}
+
+// Buttons
+.btn-primary {
+  background: transparent;
+  color: $neon-cyan;
+  border: 2px solid $neon-cyan;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  @include neon-glow($neon-cyan, 2px);
+  
+  &:hover {
+    color: $neon-pink;
+    border-color: $neon-pink;
+    @include neon-glow($neon-pink, 3px);
+    transform: translateY(-3px) scale(1.05);
+    text-decoration: none;
+  }
+}
+
+// Table styling
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 2rem 0;
+  background: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  overflow: hidden;
+  
+  th, td {
+    border: 1px solid $border-color;
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  th {
+    background: $gradient-primary;
+    color: $text-primary;
+    font-weight: bold;
+    @include neon-glow($neon-cyan, 1px);
+  }
+  
+  tr:nth-child(even) {
+    background: rgba(0, 255, 255, 0.05);
+  }
+  
+  tr:hover {
+    background: rgba(0, 255, 255, 0.1);
+  }
+  
+  td {
+    color: $text-secondary;
+  }
+}
+
+// Additional neon enhancements
+h1, h2, h3, h4, h5, h6 {
+  color: $text-primary;
+  
+  &:not(.hero h1) {
+    border-bottom: 1px solid $neon-cyan;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// Scrollbar styling
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: $dark-bg;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $neon-cyan;
+  border-radius: 6px;
+  @include neon-glow($neon-cyan, 1px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $neon-pink;
+  @include neon-glow($neon-pink, 2px);
+}
+
+// Selection styling
+::selection {
+  background: rgba(0, 255, 255, 0.3);
+  color: $text-primary;
+}
+
+// Link styling
+a {
+  color: $neon-cyan;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: $neon-pink;
+    @include neon-glow($neon-pink, 1px);
+    text-decoration: none;
+  }
+}
